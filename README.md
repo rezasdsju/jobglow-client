@@ -4,3 +4,56 @@
 
 JobGlow is a job portal that connects job seekers, recruiters, and admins.
 This repository contains the frontend web application.
+
+🔗 **Live Demo:** [jobglow-career-hub.vercel.app](https://jobglow-career-hub.vercel.app/)
+
+## 🚀 Features
+
+- **Job Seekers:** search and filter jobs, apply, and track applications
+- **Recruiters:** post vacancies, review applicants, and manage hiring
+- **Admins:** approve companies and jobs, and manage users
+
+## 🛠️ Tech Stack
+
+- [Next.js](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+
+## 📦 Getting Started
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/jobglow-frontend.git
+cd jobglow-frontend
+
+# Install dependencies
+npm install
+
+# Run the development server
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 📁 Project Structure
+
+```
+jobglow-client/
+├── app/          # Pages and routes
+├── components/   # Reusable UI components
+├── lib/          # Utilities and helpers
+└── types/        # TypeScript types
+```
+
+## 📸 Screenshots
+
+_Coming soon._
+
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE).
+
+## 🤝 Contributing
+
+Feel free to clone, fork, and contribute!

@@ -59,18 +59,18 @@ const Navbar = () => {
             <ThemeToggle />
           </div>
           <div className="flex items-center justify-center gap-2">
-            <button
-              type="button"
+            <Link
+              href="/sign-in"
               className="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
             >
               Sign In
-            </button>
-            <button
-              type="button"
+            </Link>
+            <Link
+              href="/sign-up"
               className="cursor-pointer rounded-lg bg-[radial-gradient(ellipse_at_center,var(--color-indigo-600)_0%,var(--color-indigo-500)_100%)] px-4 py-2 text-sm font-medium text-white shadow-sm shadow-indigo-600/25 transition-[filter,transform] hover:brightness-110 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:translate-y-px"
             >
               Get Started
-            </button>
+            </Link>
           </div>
         </div>
 

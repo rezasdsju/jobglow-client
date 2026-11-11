@@ -94,18 +94,20 @@ export function MobileDrawer() {
           </nav>
 
           <div className="flex flex-col gap-2.5 px-5 py-4">
-            <button
-              type="button"
-              className="w-full cursor-pointer rounded-lg border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+            <Link
+              href="/sign-in"
+              onClick={() => setOpen(false)}
+              className="block w-full cursor-pointer rounded-lg border border-border px-4 py-2.5 text-center text-sm font-medium transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
             >
               Sign In
-            </button>
-            <button
-              type="button"
-              className="w-full cursor-pointer rounded-lg bg-[radial-gradient(ellipse_at_center,var(--color-indigo-600)_0%,var(--color-indigo-500)_100%)] px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-600/25 transition-[filter,transform] hover:brightness-110 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:translate-y-px"
+            </Link>
+            <Link
+              href="/sign-up"
+              onClick={() => setOpen(false)}
+              className="block w-full cursor-pointer rounded-lg bg-[radial-gradient(ellipse_at_center,var(--color-indigo-600)_0%,var(--color-indigo-500)_100%)] px-4 py-2.5 text-center text-sm font-medium text-white shadow-sm shadow-indigo-600/25 transition-[filter,transform] hover:brightness-110 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:translate-y-px"
             >
               Get Started
-            </button>
+            </Link>
           </div>
         </section>
 

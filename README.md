@@ -7,9 +7,12 @@ This repository contains the frontend web application.
 
 🔗 **Live Demo:** [jobglow-career-hub.vercel.app](https://jobglow-career-hub.vercel.app/)
 
+
 ## 🚀 Features
 
-- 📱 **Responsive navbar** with a drawer menu for mobile
+- 📱 **Responsive navbar** with a drawer menu on mobile
+- 👤 **Profile menu drawer** with user avatar, tooltip, and a loading skeleton while the session is pending
+- 🔐 **Authentication** with email sign-up and sign-in, plus Google sign-in
 - 🌗 **Light and dark theme** with a toggle button, powered by next-themes
 
 ### Planned

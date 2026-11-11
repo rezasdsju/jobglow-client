@@ -4,8 +4,8 @@ import { FcGoogle } from "react-icons/fc"
 
 import {
   AuthForm,
+  AuthSubmitButton,
   authInlineLinkClassName,
-  authPrimaryButtonClassName,
   authSecondaryButtonClassName,
 } from "@/components/shared/auth/AuthForm"
 import { AuthShell } from "@/components/shared/auth/AuthShell"
@@ -34,7 +34,7 @@ export default function SignInPage() {
         </>
       }
     >
-      <AuthForm>
+      <AuthForm mode="sign-in">
         <div className="flex flex-col gap-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -64,9 +64,7 @@ export default function SignInPage() {
           />
         </div>
 
-        <button type="submit" className={authPrimaryButtonClassName}>
-          Sign in
-        </button>
+        <AuthSubmitButton pendingLabel="Signing in…">Sign in</AuthSubmitButton>
 
         <FieldSeparator className="my-1 text-xs uppercase">
           or continue with

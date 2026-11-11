@@ -4,8 +4,8 @@ import { FcGoogle } from "react-icons/fc"
 
 import {
   AuthForm,
+  AuthSubmitButton,
   authInlineLinkClassName,
-  authPrimaryButtonClassName,
   authSecondaryButtonClassName,
 } from "@/components/shared/auth/AuthForm"
 import { AuthShell } from "@/components/shared/auth/AuthShell"
@@ -34,7 +34,7 @@ export default function SignUpPage() {
         </>
       }
     >
-      <AuthForm>
+      <AuthForm mode="sign-up">
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">Full name</Label>
           <Input
@@ -70,9 +70,9 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        <button type="submit" className={authPrimaryButtonClassName}>
+        <AuthSubmitButton pendingLabel="Creating account…">
           Create account
-        </button>
+        </AuthSubmitButton>
 
         <p className="text-center text-xs leading-relaxed text-muted-foreground">
           By creating an account, you agree to our Terms of Service and Privacy

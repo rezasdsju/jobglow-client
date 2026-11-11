@@ -20,7 +20,7 @@ export function AuthShell({
   return (
     <div className="relative flex min-h-[calc(100svh-4.5rem)] items-center justify-center overflow-hidden px-4 py-10 sm:py-16">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-40 left-1/2 size-[30rem] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-3xl dark:bg-indigo-500/15" />
+        <div className="absolute -top-200 left-1/2 size-120 -translate-x-1/2 rounded-full bg-indigo-500/10 blur-3xl dark:bg-indigo-500/15" />
         <div className="absolute right-1/4 bottom-0 size-72 rounded-full bg-fuchsia-500/10 blur-3xl dark:bg-fuchsia-500/10" />
       </div>
 

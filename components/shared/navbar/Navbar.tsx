@@ -2,8 +2,8 @@
 import LightNavLogo from '@/app/assets/job_glow_light_mode_2.png'
 import DarkNavLogo from '@/app/assets/job_glow_dark_mode_2.png'
 import Image from 'next/image';
-import { GiHamburgerMenu } from "react-icons/gi";
-import { NavDrawer } from './NavDrawer';
+
+import { MobileDrawer } from './MobileDrawer';
 
 
 const navLinks = [
@@ -43,7 +43,7 @@ const Navbar = () => {
 
                 </div>
                 <div className='flex md:hidden'>
-                    <NavDrawer/>
+                    <MobileDrawer/>
                 </div>
             </div>
         </nav>

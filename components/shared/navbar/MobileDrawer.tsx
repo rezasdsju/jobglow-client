@@ -23,7 +23,7 @@ const navLinks = [
     { label: "Pricing", href: "/pricing" },
 ]
 
-export function NavDrawer() {
+export function MobileDrawer() {
     const [open, setOpen] = React.useState(false)
     const isMobile = useIsMobile()
 

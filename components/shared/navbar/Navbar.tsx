@@ -4,6 +4,7 @@ import DarkNavLogo from '@/app/assets/job_glow_dark_mode_2.png'
 import Image from 'next/image';
 
 import { MobileDrawer } from './MobileDrawer';
+import ThemeToggle from '../ThemeToggle';
 
 
 const navLinks = [
@@ -31,6 +32,9 @@ const Navbar = () => {
                     <div className='flex items-center justify-center'>
                         <span className='inline-block h-4 w-px bg-gray-200'></span>
                     </div>
+                    <div>
+                        <ThemeToggle />
+                    </div>
                     <div className='flex items-center justify-center gap-5'>
                         <button className='cursor-pointer'>Sign In</button>
                         <button className="rounded-md px-4 py-2 text-white bg-[radial-gradient(ellipse_at_center,var(--color-indigo-600)_0%,var(--color-indigo-500)_100%)] cursor-pointer">
@@ -42,8 +46,12 @@ const Navbar = () => {
 
 
                 </div>
+
                 <div className='flex md:hidden'>
-                    <MobileDrawer/>
+                    <div className='cursor-pointer'>
+                        <ThemeToggle />
+                    </div>
+                    <MobileDrawer />
                 </div>
             </div>
         </nav>

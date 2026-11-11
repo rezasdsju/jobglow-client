@@ -1,61 +1,88 @@
+import LightNavLogo from "@/app/assets/job_glow_light_mode_2.png"
+import DarkNavLogo from "@/app/assets/job_glow_dark_mode_2.png"
+import Image from "next/image"
+import Link from "next/link"
 
-import LightNavLogo from '@/app/assets/job_glow_light_mode_2.png'
-import DarkNavLogo from '@/app/assets/job_glow_dark_mode_2.png'
-import Image from 'next/image';
-
-import { MobileDrawer } from './MobileDrawer';
-import ThemeToggle from '../ThemeToggle';
-
+import { Separator } from "@/components/ui/separator"
+import { MobileDrawer } from "./MobileDrawer"
+import ThemeToggle from "../ThemeToggle"
 
 const navLinks = [
-    { label: "Browse Jobs", href: "/jobs" },
-    { label: "Company", href: "/company" },
-    { label: "Pricing", href: "/pricing" },
+  { label: "Browse Jobs", href: "/jobs" },
+  { label: "Company", href: "/company" },
+  { label: "Pricing", href: "/pricing" },
 ]
+
+const navLinkClassName =
+  "rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+
 const Navbar = () => {
-    return (
-        <nav className='mx-2 sticky top-2  z-50 dark:bg-black'>
-            <div className=' flex items-center justify-between rounded-2xl border border-border max-w-7xl mx-auto pr-2'>
-                <div className='flex items-center justify-center '>
-                    <div className=' rounded-2xl overflow-hidden'>
-                        <Image src={LightNavLogo} alt='Logo' width={150} height={50} className='dark:hidden '></Image>
-                        <Image src={DarkNavLogo} alt='Logo' height={50} width={150} className='hidden dark:block object-contain bg-black'></Image>
-                    </div>
-                </div>
-                <div className=' hidden md:flex items-center justify-end gap-5'>
-                    <ul className='flex items-center gap-5'>
-                        {
-                            navLinks.map((nav) => <li key={nav.href}>{nav.label}</li>)
-                        }
+  return (
+    <nav className="sticky top-2 z-50 mx-2">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 rounded-2xl border border-border/70 bg-background/80 pr-2 shadow-sm backdrop-blur-md supports-backdrop-filter:bg-background/60">
+        <Link
+          href="/"
+          aria-label="JobGlow home"
+          className="overflow-hidden rounded-2xl transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+        >
+          <Image
+            src={LightNavLogo}
+            alt="JobGlow"
+            width={150}
+            height={50}
+            priority
+            className="dark:hidden"
+          ></Image>
+          <Image
+            src={DarkNavLogo}
+            alt="JobGlow"
+            height={50}
+            width={150}
+            priority
+            className="hidden bg-black object-contain dark:block"
+          ></Image>
+        </Link>
+        <div className="hidden items-center justify-end gap-4 md:flex">
+          <ul className="flex items-center gap-1">
+            {navLinks.map((nav) => (
+              <li key={nav.href}>
+                <Link href={nav.href} className={navLinkClassName}>
+                  {nav.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="flex items-center justify-center">
+            <Separator orientation="vertical" className="h-5" />
+          </div>
+          <div>
+            <ThemeToggle />
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <button
+              type="button"
+              className="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              className="cursor-pointer rounded-lg bg-[radial-gradient(ellipse_at_center,var(--color-indigo-600)_0%,var(--color-indigo-500)_100%)] px-4 py-2 text-sm font-medium text-white shadow-sm shadow-indigo-600/25 transition-[filter,transform] hover:brightness-110 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none active:translate-y-px"
+            >
+              Get Started
+            </button>
+          </div>
+        </div>
 
-                    </ul>
-                    <div className='flex items-center justify-center'>
-                        <span className='inline-block h-4 w-px bg-gray-200'></span>
-                    </div>
-                    <div>
-                        <ThemeToggle />
-                    </div>
-                    <div className='flex items-center justify-center gap-5'>
-                        <button className='cursor-pointer'>Sign In</button>
-                        <button className="rounded-md px-4 py-2 text-white bg-[radial-gradient(ellipse_at_center,var(--color-indigo-600)_0%,var(--color-indigo-500)_100%)] cursor-pointer">
-                            Get Started
-                        </button>
-                    </div>
+        <div className="flex items-center gap-1 md:hidden">
+          <div className="cursor-pointer">
+            <ThemeToggle />
+          </div>
+          <MobileDrawer />
+        </div>
+      </div>
+    </nav>
+  )
+}
 
-
-
-
-                </div>
-
-                <div className='flex md:hidden'>
-                    <div className='cursor-pointer'>
-                        <ThemeToggle />
-                    </div>
-                    <MobileDrawer />
-                </div>
-            </div>
-        </nav>
-    );
-};
-
-export default Navbar;
+export default Navbar

@@ -18,7 +18,7 @@ const navLinkClassName =
 
 const Navbar = () => {
   return (
-    <nav className="sticky top-2 z-50 mx-2">
+    <nav className="sticky top-2 z-50 mx-2 dark:bg-black sm:dark:bg-transparent">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 rounded-2xl border border-border/70 bg-background/80 pr-2 shadow-sm backdrop-blur-md supports-backdrop-filter:bg-background/60">
         <Link
           href="/"

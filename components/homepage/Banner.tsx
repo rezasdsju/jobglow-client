@@ -15,7 +15,7 @@ const Banner = () => {
       {/* Background: soft indigo glow + faint star field, faded into the page on all four sides in light mode */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-b from-indigo-50/70 via-white to-white [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent),linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] [mask-composite:intersect] dark:bg-neutral-950 dark:bg-none dark:[mask-image:none]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-b from-indigo-50/70 via-white to-white mask-[linear-gradient(to_right,transparent,black_10%,black_90%,transparent),linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)] mask-intersect dark:bg-neutral-950 dark:bg-none dark:mask-none"
       >
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(60%_70%_at_50%_100%,rgba(99,102,241,0.35),transparent_70%)] opacity-35 dark:opacity-100" />
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(40%_60%_at_85%_90%,rgba(168,85,247,0.18),transparent_70%)] opacity-50 dark:opacity-100" />

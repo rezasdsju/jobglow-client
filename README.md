@@ -10,6 +10,7 @@ This repository contains the frontend web application.
 ## 🚀 Features
 
 - 📱 **Responsive navbar** with a drawer menu for mobile
+- 🌗 **Light and dark theme** with a toggle button, powered by next-themes
 
 ### Planned
 

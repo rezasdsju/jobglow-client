@@ -1,20 +1,22 @@
 import { Geist, Geist_Mono } from "next/font/google"
-import type { Metadata } from 'next'
+import type { Metadata } from "next"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
-import Navbar from "@/components/shared/navbar/Navbar";
+import { Toaster } from "@/components/ui/sonner"
+import { cn } from "@/lib/utils"
+import Navbar from "@/components/shared/navbar/Navbar"
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 })
 export const metadata: Metadata = {
-  title: 'JobGlow',
-  description: "Find your next career opportunity with JobGlow. Explore jobs, connect with recruiters, and track your job applications.",
+  title: "JobGlow",
+  description:
+    "Find your next career opportunity with JobGlow. Explore jobs, connect with recruiters, and track your job applications.",
 }
 export default function RootLayout({
   children,
@@ -25,7 +27,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
+      className={cn(
+        "antialiased",
+        fontMono.variable,
+        "font-sans",
+        geist.variable
+      )}
     >
       <body>
         <ThemeProvider
@@ -36,6 +43,7 @@ export default function RootLayout({
         >
           <Navbar></Navbar>
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

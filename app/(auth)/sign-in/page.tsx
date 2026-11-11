@@ -1,12 +1,10 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { FcGoogle } from "react-icons/fc"
 
 import {
     AuthForm,
     AuthSubmitButton,
     authInlineLinkClassName,
-    authSecondaryButtonClassName,
 } from "@/components/shared/auth/AuthForm"
 import { AuthShell } from "@/components/shared/auth/AuthShell"
 import { PasswordInput } from "@/components/shared/auth/PasswordInput"

@@ -24,6 +24,8 @@ This repository contains the frontend web application.
 - [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [shadcn/ui](https://ui.shadcn.com/)
+- [Better Auth](https://www.better-auth.com/)
+- [next-themes](https://github.com/pacocoursey/next-themes)
 
 ## 📦 Getting Started
 

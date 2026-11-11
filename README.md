@@ -9,9 +9,14 @@ This repository contains the frontend web application.
 
 ## 🚀 Features
 
+- 📱 **Responsive navbar** with a drawer menu for mobile
+
+### Planned
+
 - **Job Seekers:** search and filter jobs, apply, and track applications
 - **Recruiters:** post vacancies, review applicants, and manage hiring
 - **Admins:** approve companies and jobs, and manage users
+
 
 ## 🛠️ Tech Stack
 

@@ -24,7 +24,7 @@ This repository contains the frontend web application.
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/jobglow-frontend.git
+git clone https://github.com/rezasdsju/jobglow-client.git
 cd jobglow-frontend
 
 # Install dependencies

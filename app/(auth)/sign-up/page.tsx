@@ -12,6 +12,7 @@ import { FieldSeparator } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import GoogleSignIn from "@/components/shared/auth/GoogleSignIn"
+import SelectUserRole from "@/components/shared/auth/SelectUserRole"
 
 export const metadata: Metadata = {
     title: "Sign up · JobGlow",
@@ -34,6 +35,10 @@ export default function SignUpPage() {
             }
         >
             <AuthForm mode="sign-up">
+                <div>
+                    <Label>Select Your Role</Label>
+                    <SelectUserRole/>
+                </div>
                 <div className="flex flex-col gap-2">
                     <Label htmlFor="name">Full name</Label>
                     <Input

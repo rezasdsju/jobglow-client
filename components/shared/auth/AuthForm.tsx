@@ -8,6 +8,7 @@ import { toast } from "sonner"
 
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
+import { role } from "better-auth/plugins"
 
 export const authPrimaryButtonClassName = cn(
   "inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium text-white",
@@ -36,8 +37,8 @@ type AuthFormProps = {
 export function AuthForm({ children, className, mode }: AuthFormProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const router = useRouter()
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  // console.log(role)
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (isSubmitting) return
 
@@ -45,13 +46,22 @@ export function AuthForm({ children, className, mode }: AuthFormProps) {
     const name = String(formData.get("name") ?? "").trim()
     const email = String(formData.get("email") ?? "").trim()
     const password = String(formData.get("password") ?? "")
+    const roleValue = String(formData.get("role") ?? "")
+    if (mode === "sign-up") {
+      if (!["seeker", "recruiter", "admin"].includes(roleValue)) {
+        toast.error("Please select a role.")
+        return
+      }
+    }
+    const role = roleValue as "seeker" | "recruiter" | "admin"
+
 
     setIsSubmitting(true)
 
     try {
       const { error } =
         mode === "sign-up"
-          ? await authClient.signUp.email({ name, email, password })
+          ? await authClient.signUp.email({ name, email, password, role })
           : await authClient.signIn.email({ email, password })
 
       if (error) {

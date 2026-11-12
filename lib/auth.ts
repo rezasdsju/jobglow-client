@@ -10,8 +10,17 @@ export const auth = betterAuth({
     database: mongodbAdapter(db, {
         client,
     }),
+
     emailAndPassword: {
         enabled: true,
+    },
+    user: {
+        additionalFields: {
+            role: {
+                type: ['seeker', 'recruiter', 'admin'],
+                input: true
+            }
+        }
     },
     socialProviders: {
         google: {

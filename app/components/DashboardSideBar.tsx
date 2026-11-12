@@ -41,7 +41,7 @@ const menuItemsByRole = {
     recruiter: [
         { name: "Dashboard", url: "/dashboard/recruiter", icon: LayoutDashboard },
         { name: "Post a Job", url: "/dashboard/recruiter/jobs/new", icon: PlusCircle },
-        { name: "My Jobs", url: "/dashboard/recruiter/jobs", icon: BriefcaseBusiness },
+        { name: "Manage Jobs", url: "/dashboard/recruiter/jobs", icon: BriefcaseBusiness },
         { name: "Candidates", url: "/dashboard/recruiter/candidates", icon: Users },
         { name: "Applications", url: "/dashboard/recruiter/applications", icon: FileText },
         { name: "Company Profile", url: "/dashboard/recruiter/company", icon: Building2 },
@@ -72,7 +72,7 @@ export function DashboardSideBar() {
                     <SidebarMenu>
                         {menuItemsByRole[role].map((item) => (
                             <SidebarMenuItem key={item.url}>
-                                <SidebarMenuButton render={<a href={item.url} />}>
+                                <SidebarMenuButton render={<Link href={item.url} />}>
                                     <item.icon />
                                     <span>{item.name}</span>
                                 </SidebarMenuButton>

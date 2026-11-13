@@ -14,7 +14,8 @@ export type SalaryFrequency = "hour" | "day" | "month" | "year"
 export type JobStatus = "draft" | "published" | "closed"
 
 export interface IJob {
-  id?: string
+  /** MongoDB id returned by the jobs API */
+  _id?: string
   title: string
   company: string
   category: JobCategory
@@ -26,6 +27,10 @@ export interface IJob {
   min: number
   max: number
   frequency: SalaryFrequency
+  /** ISO 4217 code. The API does not send one yet, so the UI defaults to BDT */
+  currency?: string
+  /** Applicant count is not returned by the jobs API yet */
+  applicants?: number
   responsibilities: string
   qualifications: string
   status: JobStatus

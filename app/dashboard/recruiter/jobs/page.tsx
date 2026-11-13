@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import type { LucideIcon } from "lucide-react"
 import {
+  BriefcaseBusiness,
   Calculator,
   ChevronRight,
   Code2,
@@ -27,17 +28,12 @@ import type {
   JobType,
   SalaryFrequency,
 } from "@/types/jobTypes"
+import { getJobs } from "@/lib/api/jobs"
 
 export const metadata: Metadata = {
   title: "Manage Job Posts · JobGlow",
   description:
     "Review live listings, monitor applicants, and update job details across your organization.",
-}
-
-type ManageJob = IJob & {
-  id: string
-  applicants: number
-  currency: string
 }
 
 const categoryLabels: Record<JobCategory, string> = {
@@ -131,111 +127,9 @@ const frequencySuffixes: Record<SalaryFrequency, string> = {
   year: "/yr",
 }
 
-const dummyJobs: ManageJob[] = [
-  {
-    id: "job_01",
-    title: "Frontend Developer",
-    company: "HireFuse Network",
-    category: "engineering-tech",
-    jobType: "full-time",
-    isRemote: true,
-    location: "New York, USA",
-    deadline: "2025-05-30",
-    min: 25,
-    max: 40,
-    frequency: "hour",
-    applicants: 34,
-    currency: "EUR",
-    status: "published",
-    responsibilities:
-      "Build and maintain responsive interfaces with React and TypeScript.",
-    qualifications:
-      "3+ years of experience with React, TypeScript, and modern state architectures.",
-  },
-  {
-    id: "job_02",
-    title: "Senior Product Designer",
-    company: "HireFuse Labs",
-    category: "design-creative",
-    jobType: "full-time",
-    isRemote: false,
-    location: "London, UK (Hybrid)",
-    deadline: "2025-06-14",
-    min: 90000,
-    max: 115000,
-    frequency: "year",
-    applicants: 19,
-    currency: "EUR",
-    status: "published",
-    responsibilities:
-      "Own end-to-end product design across research, flows, and prototypes.",
-    qualifications:
-      "5+ years designing digital products with a strong portfolio.",
-  },
-  {
-    id: "job_03",
-    title: "DevOps Specialist",
-    company: "HireFuse Platform",
-    category: "it-software",
-    jobType: "full-time",
-    isRemote: true,
-    location: "Berlin, Germany",
-    deadline: "2025-06-30",
-    min: 95000,
-    max: 120000,
-    frequency: "year",
-    applicants: 12,
-    currency: "EUR",
-    status: "published",
-    responsibilities:
-      "Operate CI/CD pipelines, infrastructure as code, and observability.",
-    qualifications:
-      "Hands-on experience with Kubernetes, Terraform, and cloud platforms.",
-  },
-  {
-    id: "job_04",
-    title: "Product Marketing Lead",
-    company: "HireFuse Network",
-    category: "marketing-sales",
-    jobType: "full-time",
-    isRemote: true,
-    location: "United States",
-    deadline: "2025-07-15",
-    min: 80000,
-    max: 105000,
-    frequency: "year",
-    applicants: 27,
-    currency: "EUR",
-    status: "published",
-    responsibilities:
-      "Lead go-to-market strategy, positioning, and launch campaigns.",
-    qualifications:
-      "Experience marketing B2B SaaS products to technical audiences.",
-  },
-  {
-    id: "job_05",
-    title: "QA Automation Engineer",
-    company: "HireFuse Platform",
-    category: "engineering-tech",
-    jobType: "part-time",
-    isRemote: false,
-    location: "Dublin, Ireland (Hybrid)",
-    deadline: "2025-05-01",
-    min: 35,
-    max: 50,
-    frequency: "hour",
-    applicants: 8,
-    currency: "EUR",
-    status: "closed",
-    responsibilities:
-      "Write and maintain end-to-end automated test suites for web apps.",
-    qualifications:
-      "Experience with Playwright or Cypress and CI test pipelines.",
-  },
-]
-
-function formatCompensation(job: ManageJob) {
-  const symbol = currencySymbols[job.currency] ?? job.currency
+function formatCompensation(job: IJob) {
+  const currency = job.currency ?? "BDT"
+  const symbol = currencySymbols[currency] ?? currency
   const amount = (value: number) =>
     value >= 1000
       ? `${symbol}${Math.round(value / 1000)}k`
@@ -245,15 +139,18 @@ function formatCompensation(job: ManageJob) {
 }
 
 function formatDate(isoDate: string) {
+  const date = new Date(`${isoDate}T00:00:00Z`)
+  if (Number.isNaN(date.getTime())) return "—"
+
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "2-digit",
     year: "numeric",
     timeZone: "UTC",
-  }).format(new Date(`${isoDate}T00:00:00Z`))
+  }).format(date)
 }
 
-function locationLabel(job: ManageJob) {
+function locationLabel(job: IJob) {
   return job.isRemote ? `Remote (${job.location})` : job.location
 }
 
@@ -310,7 +207,7 @@ function JobRowActions({ className }: { className?: string }) {
   )
 }
 
-function CompanyCell({ job }: { job: ManageJob }) {
+function CompanyCell({ job }: { job: IJob }) {
   return (
     <div className="min-w-0">
       <p className="truncate text-sm">{job.company}</p>
@@ -322,7 +219,7 @@ function CompanyCell({ job }: { job: ManageJob }) {
   )
 }
 
-function TitleCell({ job }: { job: ManageJob }) {
+function TitleCell({ job }: { job: IJob }) {
   const category = categoryStyles[job.category]
   const Icon = category.icon
 
@@ -346,7 +243,9 @@ function TitleCell({ job }: { job: ManageJob }) {
   )
 }
 
-const ManageJobsPage = () => {
+const ManageJobsPage = async () => {
+  const data = await getJobs()
+  const jobs: IJob[] = Array.isArray(data) ? data : []
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -383,145 +282,183 @@ const ManageJobsPage = () => {
         </Button>
       </header>
 
-      {/* Table — desktop */}
-      <div className="mt-6 hidden overflow-hidden rounded-xl border border-border xl:block">
-        <table className="w-full table-fixed text-left text-sm">
-          <colgroup>
-            <col className="w-[17.5%]" />
-            <col className="w-[15%]" />
-            <col className="w-[8.5%]" />
-            <col className="w-[13%]" />
-            <col className="w-[8%]" />
-            <col className="w-[11%]" />
-            <col className="w-[11.5%]" />
-            <col className="w-[15.5%]" />
-          </colgroup>
-          <thead>
-            <tr className="border-b border-border bg-muted/30 text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
-              <th scope="col" className="px-3 py-2.5 font-medium">
-                Job title &amp; dept
-              </th>
-              <th scope="col" className="px-3 py-2.5 font-medium">
-                Company &amp; location
-              </th>
-              <th scope="col" className="px-3 py-2.5 font-medium">
-                Type
-              </th>
-              <th scope="col" className="px-3 py-2.5 font-medium">
-                Compensation
-              </th>
-              <th scope="col" className="px-3 py-2.5 font-medium">
-                Applicants
-              </th>
-              <th scope="col" className="px-3 py-2.5 font-medium">
-                Status
-              </th>
-              <th scope="col" className="px-3 py-2.5 font-medium">
-                Deadline
-              </th>
-              <th scope="col" className="px-3 py-2.5 text-right font-medium">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border/70">
-            {dummyJobs.map((job) => (
-              <tr key={job.id} className="transition-colors hover:bg-muted/20">
-                <td className="px-3 py-3">
-                  <TitleCell job={job} />
-                </td>
-                <td className="px-3 py-3">
-                  <CompanyCell job={job} />
-                </td>
-                <td className="px-3 py-3 text-sm whitespace-nowrap text-muted-foreground">
-                  {jobTypeLabels[job.jobType]}
-                </td>
-                <td className="px-3 py-3 text-sm whitespace-nowrap">
-                  {formatCompensation(job)}
-                </td>
-                <td className="px-3 py-3">
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-muted-foreground">
-                    <Users className="size-3.5" aria-hidden="true" />
-                    <span className="text-sm font-medium text-foreground">
-                      {job.applicants}
-                    </span>
-                  </span>
-                </td>
-                <td className="px-3 py-3">
-                  <StatusPill status={job.status} />
-                  <p className="mt-1 hidden text-[10px] text-muted-foreground 2xl:block">
-                    {statusStyles[job.status].note}
-                  </p>
-                </td>
-                <td className="px-3 py-3">
-                  <p className="text-sm whitespace-nowrap">
-                    {formatDate(job.deadline)}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">
-                    {job.status === "closed" ? "Closed" : "Open"}
-                  </p>
-                </td>
-                <td className="px-3 py-3">
-                  <JobRowActions className="justify-end" />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Cards — small screens */}
-      <div className="mt-6 grid gap-3 xl:hidden">
-        {dummyJobs.map((job) => (
-          <article
-            key={job.id}
-            className="rounded-xl border border-border bg-card/40 p-4 dark:bg-white/2"
+      {jobs.length === 0 ? (
+        <div className="mt-6 flex flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-16 text-center">
+          <span className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
+            <BriefcaseBusiness className="size-5" aria-hidden="true" />
+          </span>
+          <h2 className="text-sm font-medium">No job posts yet</h2>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            Publish your first listing to start receiving applications from
+            candidates.
+          </p>
+          <Button
+            nativeButton={false}
+            render={<Link href="/dashboard/recruiter/jobs/new" />}
+            className="mt-1 h-9 gap-1.5 rounded-lg bg-indigo-500 px-3.5 text-white shadow-xs shadow-indigo-500/25 hover:bg-indigo-600 focus-visible:ring-indigo-500/40"
           >
-            <div className="flex items-start gap-3">
-              <TitleCell job={job} />
-              <div className="ml-auto shrink-0">
-                <StatusPill status={job.status} />
-              </div>
-            </div>
+            <Plus className="size-4" aria-hidden="true" />
+            New Job Post
+          </Button>
+        </div>
+      ) : (
+        <>
+          {/* Table — desktop */}
+          <div className="mt-6 hidden overflow-hidden rounded-xl border border-border xl:block">
+            <table className="w-full table-fixed text-left text-sm">
+              <colgroup>
+                <col className="w-[17.5%]" />
+                <col className="w-[15%]" />
+                <col className="w-[8.5%]" />
+                <col className="w-[13%]" />
+                <col className="w-[8%]" />
+                <col className="w-[11%]" />
+                <col className="w-[11.5%]" />
+                <col className="w-[15.5%]" />
+              </colgroup>
+              <thead>
+                <tr className="border-b border-border bg-muted/30 text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
+                  <th scope="col" className="px-3 py-2.5 font-medium">
+                    Job title &amp; dept
+                  </th>
+                  <th scope="col" className="px-3 py-2.5 font-medium">
+                    Company &amp; location
+                  </th>
+                  <th scope="col" className="px-3 py-2.5 font-medium">
+                    Type
+                  </th>
+                  <th scope="col" className="px-3 py-2.5 font-medium">
+                    Compensation
+                  </th>
+                  <th scope="col" className="px-3 py-2.5 font-medium">
+                    Applicants
+                  </th>
+                  <th scope="col" className="px-3 py-2.5 font-medium">
+                    Status
+                  </th>
+                  <th scope="col" className="px-3 py-2.5 font-medium">
+                    Deadline
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-2.5 text-right font-medium"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/70">
+                {jobs.map((job, index) => (
+                  <tr
+                    key={job._id ?? `${job.title}-${index}`}
+                    className="transition-colors hover:bg-muted/20"
+                  >
+                    <td className="px-3 py-3">
+                      <TitleCell job={job} />
+                    </td>
+                    <td className="px-3 py-3">
+                      <CompanyCell job={job} />
+                    </td>
+                    <td className="px-3 py-3 text-sm whitespace-nowrap text-muted-foreground">
+                      {jobTypeLabels[job.jobType]}
+                    </td>
+                    <td className="px-3 py-3 text-sm whitespace-nowrap">
+                      {formatCompensation(job)}
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-muted-foreground">
+                        <Users className="size-3.5" aria-hidden="true" />
+                        <span
+                          className={cn(
+                            "text-sm font-medium",
+                            job.applicants == null
+                              ? "text-muted-foreground"
+                              : "text-foreground"
+                          )}
+                        >
+                          {job.applicants ?? "—"}
+                        </span>
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <StatusPill status={job.status} />
+                      <p className="mt-1 hidden text-[10px] text-muted-foreground 2xl:block">
+                        {statusStyles[job.status].note}
+                      </p>
+                    </td>
+                    <td className="px-3 py-3">
+                      <p className="text-sm whitespace-nowrap">
+                        {formatDate(job.deadline)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {job.status === "closed" ? "Closed" : "Open"}
+                      </p>
+                    </td>
+                    <td className="px-3 py-3">
+                      <JobRowActions className="justify-end" />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-            <div className="mt-3">
-              <CompanyCell job={job} />
-            </div>
+          {/* Cards — small screens */}
+          <div className="mt-6 grid gap-3 xl:hidden">
+            {jobs.map((job, index) => (
+              <article
+                key={job._id ?? `${job.title}-${index}`}
+                className="rounded-xl border border-border bg-card/40 p-4 dark:bg-white/2"
+              >
+                <div className="flex items-start gap-3">
+                  <TitleCell job={job} />
+                  <div className="ml-auto shrink-0">
+                    <StatusPill status={job.status} />
+                  </div>
+                </div>
 
-            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border/70 pt-3 text-xs">
-              <div>
-                <dt className="text-muted-foreground">Type</dt>
-                <dd className="mt-0.5 font-medium">
-                  {jobTypeLabels[job.jobType]}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">Compensation</dt>
-                <dd className="mt-0.5 font-medium">
-                  {formatCompensation(job)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">Applicants</dt>
-                <dd className="mt-0.5 inline-flex items-center gap-1.5 font-medium">
-                  <Users className="size-3.5" aria-hidden="true" />
-                  {job.applicants} Candidates
-                </dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">Deadline</dt>
-                <dd className="mt-0.5 font-medium">
-                  {formatDate(job.deadline)}
-                </dd>
-              </div>
-            </dl>
+                <div className="mt-3">
+                  <CompanyCell job={job} />
+                </div>
 
-            <div className="mt-3 border-t border-border/70 pt-3">
-              <JobRowActions className="justify-end" />
-            </div>
-          </article>
-        ))}
-      </div>
+                <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border/70 pt-3 text-xs">
+                  <div>
+                    <dt className="text-muted-foreground">Type</dt>
+                    <dd className="mt-0.5 font-medium">
+                      {jobTypeLabels[job.jobType]}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Compensation</dt>
+                    <dd className="mt-0.5 font-medium">
+                      {formatCompensation(job)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Applicants</dt>
+                    <dd className="mt-0.5 inline-flex items-center gap-1.5 font-medium">
+                      <Users className="size-3.5" aria-hidden="true" />
+                      {job.applicants != null
+                        ? `${job.applicants} Candidates`
+                        : "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Deadline</dt>
+                    <dd className="mt-0.5 font-medium">
+                      {formatDate(job.deadline)}
+                    </dd>
+                  </div>
+                </dl>
+
+                <div className="mt-3 border-t border-border/70 pt-3">
+                  <JobRowActions className="justify-end" />
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }

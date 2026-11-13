@@ -29,6 +29,7 @@ import type {
   SalaryFrequency,
 } from "@/types/jobTypes"
 import { getJobs } from "@/lib/api/jobs"
+import DeleteJobDialog from "@/app/components/DeleteJobDialog"
 
 export const metadata: Metadata = {
   title: "Manage Job Posts · JobGlow",
@@ -173,7 +174,7 @@ function StatusPill({ status }: { status: JobStatus }) {
   )
 }
 
-function JobRowActions({ className }: { className?: string }) {
+function JobRowActions({ job,className }: {job:IJob, className?: string }) {
   return (
     <div className={cn("flex items-center gap-1", className)}>
       <Button
@@ -183,7 +184,7 @@ function JobRowActions({ className }: { className?: string }) {
         className="h-7 gap-1.5 border-indigo-500/30 bg-indigo-500/10 px-2 text-indigo-600 hover:bg-indigo-500/20 hover:text-indigo-500 dark:text-indigo-400"
       >
         <Pencil className="size-3" aria-hidden="true" />
-        Update
+        
       </Button>
       <Button
         type="button"
@@ -194,6 +195,7 @@ function JobRowActions({ className }: { className?: string }) {
       >
         <Copy className="size-3.5" aria-hidden="true" />
       </Button>
+      <DeleteJobDialog job={job}/>
       <Button
         type="button"
         variant="ghost"
@@ -395,7 +397,7 @@ const ManageJobsPage = async () => {
                       </p>
                     </td>
                     <td className="px-3 py-3">
-                      <JobRowActions className="justify-end" />
+                      <JobRowActions job={job} className="justify-end" />
                     </td>
                   </tr>
                 ))}
@@ -452,7 +454,7 @@ const ManageJobsPage = async () => {
                 </dl>
 
                 <div className="mt-3 border-t border-border/70 pt-3">
-                  <JobRowActions className="justify-end" />
+                  <JobRowActions job={job} className="justify-end" />
                 </div>
               </article>
             ))}

@@ -16,6 +16,7 @@ This repository contains the frontend web application.
 - 👥 **Role selection at sign-up:** Seeker, Recruiter, or Admin
 - 🌗 **Light and dark themes** with a toggle button, powered by `next-themes`
 - 💼 **Job creation for Recruiters** to post new job listings
+- 🗑️ **Job deletion for Recruiters** to remove their job listings
 
 > **Note:** For now, anyone can choose any role. Verification for the Recruiter and Admin roles is planned.
 

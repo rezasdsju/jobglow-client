@@ -14,16 +14,17 @@ This repository contains the frontend web application.
 - 👤 **Profile menu drawer** with user avatar, tooltip, and a loading skeleton while the session is pending
 - 🔐 **Authentication** with email sign-up and sign-in, plus Google sign-in
 - 👥 **Role selection at sign-up:** Seeker, Recruiter, or Admin
-- 🌗 **Light and dark theme** with a toggle button, powered by next-themes
+- 🌗 **Light and dark themes** with a toggle button, powered by `next-themes`
+- 💼 **Job creation for Recruiters** to post new job listings
 
 > **Note:** For now, anyone can choose any role. Verification for the Recruiter and Admin roles is planned.
 
 ### Planned
 
 - **Role verification** for Recruiters and Admins
-- **Job Seekers:** search and filter jobs, apply, and track applications
-- **Recruiters:** post vacancies, review applicants, and manage hiring
-- **Admins:** approve companies and jobs, and manage users
+- **Job Seekers:** Search and filter jobs, apply, and track applications
+- **Recruiters:** Review applicants and manage hiring
+- **Admins:** Approve companies and jobs, and manage users
 
 
 ## 🛠️ Tech Stack

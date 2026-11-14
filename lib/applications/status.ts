@@ -52,3 +52,9 @@ export const APPLICATION_STATUS_META: Record<
     dotClassName: "bg-muted-foreground/60",
   },
 }
+
+/** Runtime guard for status values coming from the API. */
+export const isApplicationStatus = (
+  value: unknown
+): value is ApplicationStatus =>
+  typeof value === "string" && value in APPLICATION_STATUS_META

@@ -1,13 +1,17 @@
-'use client'
+"use client"
 import { Bookmark } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { isClosed } from "@/lib/jobs/format"
 import { surfaceClassName } from "@/lib/jobs/surface"
 import { cn } from "@/lib/utils"
+import type { NewApplication } from "@/types/applicationTypes"
 import type { IJob } from "@/types/jobTypes"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
+import { applyToJob } from "@/lib/actions/applications"
+import { toast } from "sonner"
+import { GiReturnArrow } from "react-icons/gi"
 
 /**
  * Job title, company, hiring status, and the primary actions. The Apply and
@@ -21,10 +25,43 @@ export const JobDetailHeader = ({ job }: { job: IJob }) => {
     return <div>Loading...</div>
   }
   const user = session?.user
-  const handleApplyNow = () => {
+  const handleApplyNow = async () => {
     if (!user) {
       router.push(`/sign-in?redirectTo=/browse-jobs/${job._id}`)
       return
+    } else if (user.role === "seeker") {
+      if (!job._id) {
+        toast.error("Id is missing")
+        return
+      }
+      const application: NewApplication = {
+        jobId: job._id,
+        userId: user.id,
+        name: user.name,
+        email: user.email,
+        image: user.image,
+        jobTitle: job.title,
+        companyName: job.company,
+        category: job.category,
+        jobType: job.jobType,
+        isRemote: job.isRemote,
+        location: job.location,
+      }
+      try {
+        const result = await applyToJob(application)
+        if (result.insertedId) {
+          toast.success("Application submitted successfully")
+          router.push("/browse-jobs")
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Could not submit your application"
+        )
+      }
+    } else {
+      console.log("Not Seeker")
     }
   }
   return (
@@ -79,10 +116,7 @@ export const JobDetailHeader = ({ job }: { job: IJob }) => {
             <Bookmark className="size-4" aria-hidden="true" />
           </Button>
           {/* TODO: wire the apply flow. */}
-          <Button
-            onClick={handleApplyNow}
-            type="button"
-            className="h-9 px-5">
+          <Button onClick={handleApplyNow} type="button" className="h-9 px-5">
             Apply Now
           </Button>
         </div>

@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import GoogleSignIn from "@/components/shared/auth/GoogleSignIn"
 import SelectUserRole from "@/components/shared/auth/SelectUserRole"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
     title: "Sign up · JobGlow",
@@ -34,61 +35,64 @@ export default function SignUpPage() {
                 </>
             }
         >
-            <AuthForm mode="sign-up">
-                <div>
-                    <Label>Select Your Role</Label>
-                    <SelectUserRole/>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="name">Full name</Label>
-                    <Input
-                        id="name"
-                        name="name"
-                        type="text"
-                        autoComplete="name"
-                        placeholder="Jane Doe"
-                    />
-                </div>
 
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        placeholder="you@example.com"
-                    />
-                </div>
+            <Suspense fallback={<div>Loading...</div>}>
+                <AuthForm mode="sign-up">
+                    <div>
+                        <Label>Select Your Role</Label>
+                        <SelectUserRole />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="name">Full name</Label>
+                        <Input
+                            id="name"
+                            name="name"
+                            type="text"
+                            autoComplete="name"
+                            placeholder="Jane Doe"
+                        />
+                    </div>
 
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="password">Password</Label>
-                    <PasswordInput
-                        id="password"
-                        name="password"
-                        autoComplete="new-password"
-                        placeholder="Create a password"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                        Use at least 8 characters.
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            placeholder="you@example.com"
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="password">Password</Label>
+                        <PasswordInput
+                            id="password"
+                            name="password"
+                            autoComplete="new-password"
+                            placeholder="Create a password"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            Use at least 8 characters.
+                        </p>
+                    </div>
+
+                    <AuthSubmitButton pendingLabel="Creating account…">
+                        Create account
+                    </AuthSubmitButton>
+
+                    <p className="text-center text-xs leading-relaxed text-muted-foreground">
+                        By creating an account, you agree to our Terms of Service and Privacy
+                        Policy.
                     </p>
-                </div>
 
-                <AuthSubmitButton pendingLabel="Creating account…">
-                    Create account
-                </AuthSubmitButton>
+                    <FieldSeparator className="my-1 text-xs uppercase">
+                        or continue with
+                    </FieldSeparator>
 
-                <p className="text-center text-xs leading-relaxed text-muted-foreground">
-                    By creating an account, you agree to our Terms of Service and Privacy
-                    Policy.
-                </p>
-
-                <FieldSeparator className="my-1 text-xs uppercase">
-                    or continue with
-                </FieldSeparator>
-
-                <GoogleSignIn />
-            </AuthForm>
+                    <GoogleSignIn />
+                </AuthForm>
+            </Suspense>
         </AuthShell>
     )
 }

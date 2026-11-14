@@ -1,3 +1,4 @@
+'use client'
 import { Bookmark } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -5,6 +6,8 @@ import { isClosed } from "@/lib/jobs/format"
 import { surfaceClassName } from "@/lib/jobs/surface"
 import { cn } from "@/lib/utils"
 import type { IJob } from "@/types/jobTypes"
+import { authClient } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
 
 /**
  * Job title, company, hiring status, and the primary actions. The Apply and
@@ -12,7 +15,18 @@ import type { IJob } from "@/types/jobTypes"
  */
 export const JobDetailHeader = ({ job }: { job: IJob }) => {
   const closed = isClosed(job)
-
+  const router = useRouter()
+  const { data: session, isPending } = authClient.useSession()
+  if (isPending) {
+    return <div>Loading...</div>
+  }
+  const user = session?.user
+  const handleApplyNow = () => {
+    if (!user) {
+      router.push(`/sign-in?redirectTo=/browse-jobs/${job._id}`)
+      return
+    }
+  }
   return (
     <section className={cn(surfaceClassName, "p-5 sm:p-6")}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -25,7 +39,7 @@ export const JobDetailHeader = ({ job }: { job: IJob }) => {
           </div>
 
           <div className="min-w-0">
-            <h1 className="text-xl font-semibold tracking-tight break-words sm:text-2xl">
+            <h1 className="text-xl font-semibold tracking-tight wrap-break-word sm:text-2xl">
               {job.title}
             </h1>
             <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
@@ -65,7 +79,10 @@ export const JobDetailHeader = ({ job }: { job: IJob }) => {
             <Bookmark className="size-4" aria-hidden="true" />
           </Button>
           {/* TODO: wire the apply flow. */}
-          <Button type="button" className="h-9 px-5">
+          <Button
+            onClick={handleApplyNow}
+            type="button"
+            className="h-9 px-5">
             Apply Now
           </Button>
         </div>

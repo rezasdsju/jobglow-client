@@ -33,7 +33,7 @@ import { authClient } from "@/lib/auth-client"
 
 const navLinks = [
   { label: "Profile", href: "/profile", icon: UserRound },
-  { label: "Browse Jobs", href: "/jobs", icon: Briefcase },
+  { label: "Browse Jobs", href: "/browse-jobs", icon: Briefcase },
   { label: "Company", href: "/company", icon: Building2 },
   { label: "Pricing", href: "/pricing", icon: CreditCard },
 ]

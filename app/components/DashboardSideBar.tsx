@@ -32,7 +32,7 @@ import Link from "next/link"
 const menuItemsByRole = {
     seeker: [
         { name: "Dashboard", url: "/dashboard/seeker", icon: LayoutDashboard },
-        { name: "Browse Jobs", url: "/jobs", icon: Search },
+        { name: "Browse Jobs", url: "/browse-jobs", icon: Search },
         { name: "Applications", url: "/dashboard/seeker/applications", icon: FileText },
         { name: "Saved Jobs", url: "/dashboard/seeker/saved-jobs", icon: Bookmark },
         { name: "Interviews", url: "/dashboard/seeker/interviews", icon: CalendarClock },

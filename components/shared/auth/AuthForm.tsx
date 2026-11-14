@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import type { ReactNode } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -38,6 +38,9 @@ export function AuthForm({ children, className, mode }: AuthFormProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const router = useRouter()
   // console.log(role)
+
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get("redirectTo")??"/"
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (isSubmitting) return
@@ -62,7 +65,7 @@ export function AuthForm({ children, className, mode }: AuthFormProps) {
       const { error } =
         mode === "sign-up"
           ? await authClient.signUp.email({ name, email, password, role })
-          : await authClient.signIn.email({ email, password })
+          : await authClient.signIn.email({ email, password,callbackURL:redirectTo })
 
       if (error) {
         toast.error(error.message ?? "Something went wrong. Please try again.")

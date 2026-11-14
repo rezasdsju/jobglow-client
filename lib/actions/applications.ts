@@ -1,4 +1,5 @@
-import type { NewApplication } from "@/types/applicationTypes"
+import { normalizeApplication } from "@/lib/applications/normalize"
+import type { IApplication, NewApplication } from "@/types/applicationTypes"
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_API_URL
 
@@ -29,4 +30,20 @@ export const applyToJob = async (data: NewApplication) => {
   }
 
   return response.json()
+}
+
+export const getApplications = async (query = ""): Promise<IApplication[]> => {
+  const response = await fetch(
+    `${BASE_URL}/applications${query ? `?${query}` : ""}`,
+    { cache: "no-store" }
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to load applications: ${response.status} ${response.statusText}`
+    )
+  }
+
+  const data = await response.json()
+  return (Array.isArray(data) ? data : []).map(normalizeApplication)
 }

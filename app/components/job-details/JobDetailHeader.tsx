@@ -9,7 +9,7 @@ import type { NewApplication } from "@/types/applicationTypes"
 import type { IJob } from "@/types/jobTypes"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
-import { applyToJob } from "@/lib/actions/applications"
+import { applyToJob, getApplicationsCount } from "@/lib/actions/applications"
 import { toast } from "sonner"
 import { GiReturnArrow } from "react-icons/gi"
 
@@ -34,34 +34,43 @@ export const JobDetailHeader = ({ job }: { job: IJob }) => {
         toast.error("Id is missing")
         return
       }
-      const application: NewApplication = {
-        jobId: job._id,
-        userId: user.id,
-        name: user.name,
-        email: user.email,
-        image: user.image,
-        jobTitle: job.title,
-        companyName: job.company,
-        category: job.category,
-        jobType: job.jobType,
-        isRemote: job.isRemote,
-        location: job.location,
-      }
-      try {
-        const result = await applyToJob(application)
-        if (result.insertedId) {
-          toast.success("Application submitted successfully")
-          router.push("/browse-jobs")
+
+      const countResult = await getApplicationsCount(`applicantId=${user.id}`)
+      // console.log(countResult)
+
+      if (countResult.count >= 3) {
+        router.push('/payment')
+        return
+      } else {
+        const application: NewApplication = {
+          jobId: job._id,
+          userId: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          jobTitle: job.title,
+          companyName: job.company,
+          category: job.category,
+          jobType: job.jobType,
+          isRemote: job.isRemote,
+          location: job.location,
         }
-      } catch (error) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Could not submit your application"
-        )
+        try {
+          const result = await applyToJob(application)
+          if (result.insertedId) {
+            toast.success("Application submitted successfully")
+            router.push("/browse-jobs")
+          }
+        } catch (error) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Could not submit your application"
+          )
+        }
       }
     } else {
-      console.log("Not Seeker")
+      toast.info('You are not in seeker role. So You Can not Apply')
     }
   }
   return (

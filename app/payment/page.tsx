@@ -1,6 +1,3 @@
-"use client"
-
-import * as React from "react"
 import { Check, Lock, ShieldCheck } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -19,22 +16,17 @@ const plan = {
     ],
 }
 
-const PaymentPage = () => {
-    const [isLoading, setIsLoading] = React.useState(false)
-
-    const handlePay = async () => {
-        setIsLoading(true)
-        try {
-            // TODO: call your backend to create a Stripe Checkout session,
-            // then redirect: window.location.href = data.url
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-        } finally {
-            setIsLoading(false)
-        }
-    }
+const PaymentPage = async ({ searchParams }: { searchParams: Promise<{ plan?: string, canceled?: string }> }) => {
+    const { canceled } = await searchParams
 
     return (
         <main className="mx-auto w-full max-w-4xl px-4 py-10 sm:py-16">
+            {canceled && (
+                <p className="mb-6 rounded-md border border-border bg-muted p-3 text-sm text-muted-foreground">
+                    Payment canceled. You can try again when you are ready.
+                </p>
+            )}
+
             <div className="mb-8 flex flex-col gap-1">
                 <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
                     Complete your payment
@@ -84,14 +76,15 @@ const PaymentPage = () => {
                         </span>
                     </div>
 
-                    <Button
-                        onClick={handlePay}
-                        disabled={isLoading}
-                        className="h-10 w-full cursor-pointer gap-2 bg-[radial-gradient(ellipse_at_center,var(--color-indigo-600)_0%,var(--color-indigo-500)_100%)] text-white hover:brightness-110"
-                    >
-                        <Lock className="size-4" aria-hidden="true" />
-                        {isLoading ? "Redirecting..." : `Pay $${plan.price.toFixed(2)}`}
-                    </Button>
+                    <form action="/api/checkout_sessions" method="POST">
+                        <Button
+                            type="submit"
+                            className="h-10 w-full cursor-pointer gap-2 bg-[radial-gradient(ellipse_at_center,var(--color-indigo-600)_0%,var(--color-indigo-500)_100%)] text-white hover:brightness-110"
+                        >
+                            <Lock className="size-4" aria-hidden="true" />
+                            Pay ${plan.price.toFixed(2)}
+                        </Button>
+                    </form>
 
                     <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
                         <ShieldCheck className="size-3.5" aria-hidden="true" />

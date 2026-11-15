@@ -37,13 +37,18 @@ export const getApplications = async (query = ""): Promise<IApplication[]> => {
     `${BASE_URL}/applications${query ? `?${query}` : ""}`,
     { cache: "no-store" }
   )
-
   if (!response.ok) {
     throw new Error(
       `Failed to load applications: ${response.status} ${response.statusText}`
     )
   }
-
   const data = await response.json()
   return (Array.isArray(data) ? data : []).map(normalizeApplication)
+}
+
+
+
+export const getApplicationsCount = async (query = ""):Promise<{count:number}> => {
+  const res = await fetch(`${BASE_URL}/applications/count?${query}`)
+  return res.json()
 }

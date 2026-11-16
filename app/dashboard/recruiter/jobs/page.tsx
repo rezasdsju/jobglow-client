@@ -21,15 +21,11 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type {
-  IJob,
-  JobCategory,
-  JobStatus,
-  JobType,
-  SalaryFrequency,
-} from "@/types/jobTypes"
+import type { IJob, JobCategory, JobStatus, JobType } from "@/types/jobTypes"
 import { getJobs } from "@/lib/api/jobs"
+import { formatSalary } from "@/lib/jobs/format"
 import DeleteJobDialog from "@/app/components/DeleteJobDialog"
+import { getSession } from "@/lib/core/server"
 
 export const metadata: Metadata = {
   title: "Manage Job Posts · JobGlow",
@@ -114,31 +110,6 @@ const statusStyles: Record<
   },
 }
 
-const currencySymbols: Record<string, string> = {
-  EUR: "€",
-  USD: "$",
-  GBP: "£",
-  BDT: "৳",
-}
-
-const frequencySuffixes: Record<SalaryFrequency, string> = {
-  hour: "/hr",
-  day: "/day",
-  month: "/mo",
-  year: "/yr",
-}
-
-function formatCompensation(job: IJob) {
-  const currency = job.currency ?? "BDT"
-  const symbol = currencySymbols[currency] ?? currency
-  const amount = (value: number) =>
-    value >= 1000
-      ? `${symbol}${Math.round(value / 1000)}k`
-      : `${symbol}${value}`
-
-  return `${amount(job.min)} - ${amount(job.max)} ${frequencySuffixes[job.frequency]}`
-}
-
 function formatDate(isoDate: string) {
   const date = new Date(`${isoDate}T00:00:00Z`)
   if (Number.isNaN(date.getTime())) return "—"
@@ -153,6 +124,10 @@ function formatDate(isoDate: string) {
 
 function locationLabel(job: IJob) {
   return job.isRemote ? `Remote (${job.location})` : job.location
+}
+
+function compensationLabel(job: IJob) {
+  return formatSalary(job) ?? "Not specified"
 }
 
 function StatusPill({ status }: { status: JobStatus }) {
@@ -174,7 +149,7 @@ function StatusPill({ status }: { status: JobStatus }) {
   )
 }
 
-function JobRowActions({ job,className }: {job:IJob, className?: string }) {
+function JobRowActions({ job, className }: { job: IJob; className?: string }) {
   return (
     <div className={cn("flex items-center gap-1", className)}>
       <Button
@@ -184,7 +159,6 @@ function JobRowActions({ job,className }: {job:IJob, className?: string }) {
         className="h-7 gap-1.5 border-indigo-500/30 bg-indigo-500/10 px-2 text-indigo-600 hover:bg-indigo-500/20 hover:text-indigo-500 dark:text-indigo-400"
       >
         <Pencil className="size-3" aria-hidden="true" />
-        
       </Button>
       <Button
         type="button"
@@ -195,7 +169,7 @@ function JobRowActions({ job,className }: {job:IJob, className?: string }) {
       >
         <Copy className="size-3.5" aria-hidden="true" />
       </Button>
-      <DeleteJobDialog job={job}/>
+      <DeleteJobDialog job={job} />
       <Button
         type="button"
         variant="ghost"
@@ -218,6 +192,20 @@ function CompanyCell({ job }: { job: IJob }) {
         <span className="truncate">{locationLabel(job)}</span>
       </p>
     </div>
+  )
+}
+
+function ApplicantsCell({ job }: { job: IJob }) {
+  if (!job._id) return <span className="text-muted-foreground">—</span>
+
+  return (
+    <Link
+      href={`/dashboard/recruiter/jobs/${job._id}/applications`}
+      className="inline-flex items-center gap-1.5 text-xs font-medium whitespace-nowrap text-indigo-600 transition-colors hover:text-indigo-500 hover:underline dark:text-indigo-400"
+    >
+      <Users className="size-3.5" aria-hidden="true" />
+      View applications
+    </Link>
   )
 }
 
@@ -246,7 +234,9 @@ function TitleCell({ job }: { job: IJob }) {
 }
 
 const ManageJobsPage = async () => {
-  const data = await getJobs()
+  const session = await getSession()
+
+  const data = await getJobs(`recruiterId=${session?.user.id}`)
   const jobs: IJob[] = Array.isArray(data) ? data : []
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -310,13 +300,13 @@ const ManageJobsPage = async () => {
             <table className="w-full table-fixed text-left text-sm">
               <colgroup>
                 <col className="w-[17.5%]" />
-                <col className="w-[15%]" />
-                <col className="w-[8.5%]" />
-                <col className="w-[13%]" />
+                <col className="w-[14%]" />
                 <col className="w-[8%]" />
-                <col className="w-[11%]" />
-                <col className="w-[11.5%]" />
-                <col className="w-[15.5%]" />
+                <col className="w-[12%]" />
+                <col className="w-[13%]" />
+                <col className="w-[10.5%]" />
+                <col className="w-[10.5%]" />
+                <col className="w-[14.5%]" />
               </colgroup>
               <thead>
                 <tr className="border-b border-border bg-muted/30 text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
@@ -365,22 +355,10 @@ const ManageJobsPage = async () => {
                       {jobTypeLabels[job.jobType]}
                     </td>
                     <td className="px-3 py-3 text-sm whitespace-nowrap">
-                      {formatCompensation(job)}
+                      {compensationLabel(job)}
                     </td>
                     <td className="px-3 py-3">
-                      <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-muted-foreground">
-                        <Users className="size-3.5" aria-hidden="true" />
-                        <span
-                          className={cn(
-                            "text-sm font-medium",
-                            job.applicants == null
-                              ? "text-muted-foreground"
-                              : "text-foreground"
-                          )}
-                        >
-                          {job.applicants ?? "—"}
-                        </span>
-                      </span>
+                      <ApplicantsCell job={job} />
                     </td>
                     <td className="px-3 py-3">
                       <StatusPill status={job.status} />
@@ -433,16 +411,13 @@ const ManageJobsPage = async () => {
                   <div>
                     <dt className="text-muted-foreground">Compensation</dt>
                     <dd className="mt-0.5 font-medium">
-                      {formatCompensation(job)}
+                      {compensationLabel(job)}
                     </dd>
                   </div>
                   <div>
                     <dt className="text-muted-foreground">Applicants</dt>
-                    <dd className="mt-0.5 inline-flex items-center gap-1.5 font-medium">
-                      <Users className="size-3.5" aria-hidden="true" />
-                      {job.applicants != null
-                        ? `${job.applicants} Candidates`
-                        : "—"}
+                    <dd className="mt-0.5">
+                      <ApplicantsCell job={job} />
                     </dd>
                   </div>
                   <div>

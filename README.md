@@ -44,13 +44,16 @@ App Router and a separate Express/MongoDB API.
 - 💼 **Create job posts** with title, company, category, type, work mode,
   location, salary range/frequency, deadline, responsibilities, and
   qualifications
-- 📋 **Manage job posts** with salary, status, applicant count, and quick
-  actions
+- 📋 **Manage job posts** with salary, status, and quick actions, plus a
+  direct link to each post's applicants
+- 👥 **Review applicants per job** in a table with applicant details,
+  application date, current status, and a status update control
 - 🗑️ **Delete job posts** behind a confirmation dialog with toast feedback
 
 > **Current status:** search is wired to the API. Filter, sort, and pagination
 > controls render from the URL but do not write back to it yet, and the
-> **Apply Now** / **Save** actions are placeholders.
+> **Apply Now** / **Save** actions are placeholders. Recruiter status changes
+> update the review page only; saving them to the database is planned.
 
 > **Note:** For now, anyone can choose any role. Verification for the Recruiter
 > and Admin roles is planned.
@@ -58,7 +61,8 @@ App Router and a separate Express/MongoDB API.
 ### Planned
 
 - **Job Seekers:** apply to jobs, save listings, and track applications
-- **Recruiters:** edit/duplicate jobs, review applicants, and manage hiring
+- **Recruiters:** edit/duplicate jobs, persist applicant status changes, and
+  manage hiring
 - **Admins:** approve companies and jobs, and manage users
 - **Role verification** for Recruiters and Admins
 - Server-side sorting and pagination
@@ -177,6 +181,7 @@ jobglow-client/
 | `/dashboard/recruiter`          | Recruiter dashboard            |
 | `/dashboard/recruiter/jobs`     | Manage job posts               |
 | `/dashboard/recruiter/jobs/new` | Create a job post              |
+| `/dashboard/recruiter/jobs/[id]/applications` | Review job applicants |
 | `/dashboard/admin`              | Admin dashboard                |
 
 ## 📸 Screenshots

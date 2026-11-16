@@ -53,6 +53,21 @@ export const APPLICATION_STATUS_META: Record<
   },
 }
 
+/**
+ * Statuses a recruiter can set from the applicant review table.
+ *
+ * `withdrawn` is left out because it describes an action taken by the
+ * applicant, not a hiring decision.
+ */
+export const RECRUITER_APPLICATION_STATUSES: ApplicationStatus[] = [
+  "applied",
+  "review",
+  "shortlisted",
+  "interview",
+  "offered",
+  "rejected",
+]
+
 /** Runtime guard for status values coming from the API. */
 export const isApplicationStatus = (
   value: unknown

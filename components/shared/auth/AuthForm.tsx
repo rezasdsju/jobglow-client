@@ -8,7 +8,6 @@ import { toast } from "sonner"
 
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
-import { role } from "better-auth/plugins"
 
 export const authPrimaryButtonClassName = cn(
   "inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium text-white",

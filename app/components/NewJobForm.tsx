@@ -27,6 +27,7 @@ import React, { useState } from "react"
 import { createJob } from "@/lib/actions/jobs"
 import { IJob, JobCategory, JobType, SalaryFrequency } from "@/types/jobTypes"
 import { toast } from "sonner"
+import { authClient } from "@/lib/auth-client"
 
 const jobCategories = [
     { label: "Engineering & Tech", value: "engineering-tech" },
@@ -84,6 +85,7 @@ function SectionHeading({ step, title }: { step: number; title: string }) {
 }
 
 const NewJobForm = () => {
+    const {data:session} = authClient.useSession()
     const [selectedJobType, setSelectedJobType] = useState('full-time')
     // console.log(selectedJobType)
     const [jobCreated, setJobCreated] = useState(false)
@@ -99,6 +101,7 @@ const NewJobForm = () => {
             company: String(formData.get("company") ?? ""),
             category: String(formData.get("category") ?? "") as JobCategory,
             jobType: selectedJobType as JobType,
+            recruiterId: session?.user.id,
             isRemote,
             location: String(formData.get("location") ?? ""),
             deadline: String(formData.get("deadline") ?? ""),

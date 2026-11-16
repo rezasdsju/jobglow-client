@@ -18,7 +18,9 @@ export interface IJob {
   _id?: string
   title: string
   company: string
-  category: JobCategory
+  category: JobCategory,
+  recruiterId?: string,
+  companyId?:string,
   jobType: JobType
   isRemote: boolean
   location: string

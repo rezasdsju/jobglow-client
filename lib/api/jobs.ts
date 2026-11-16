@@ -13,8 +13,18 @@ export const getJobs = async (query = ""): Promise<IJob[]> => {
   return Array.isArray(data) ? data : []
 }
 
-/** The API has no single-job endpoint yet, so look the job up in the list. */
-export const getJobById = async(jobId:string)=>{
-  const res = await fetch(`${BASE_URL}/jobs/${jobId}`)
-  return res.json()
+/** Loads one job by its Mongo id, returning null when it cannot be found. */
+export const getJobById = async (jobId: string): Promise<IJob | null> => {
+  const res = await fetch(`${BASE_URL}/jobs/${jobId}`, { cache: "no-store" })
+  if (!res.ok) return null
+
+  // The API replies with an empty body when the id does not exist.
+  const body = await res.text()
+  if (!body) return null
+
+  try {
+    return JSON.parse(body) as IJob
+  } catch {
+    return null
+  }
 }

@@ -26,10 +26,14 @@ const formatAmount = (value: number, symbol: string) =>
     : `${symbol}${value}`
 
 export const formatSalary = (job: IJob) => {
+  // Some older job posts do not include a salary range.
+  if (!job.min && !job.max) return null
+
   const currency = job.currency ?? "BDT"
   const symbol = currencySymbols[currency] ?? currency
+  const suffix = frequencySuffixes[job.frequency]
 
-  return `${formatAmount(job.min, symbol)} - ${formatAmount(job.max, symbol)} ${frequencySuffixes[job.frequency]}`
+  return `${formatAmount(job.min, symbol)} - ${formatAmount(job.max, symbol)}${suffix ? ` ${suffix}` : ""}`
 }
 
 export const formatLocation = (job: Pick<IJob, "location" | "isRemote">) => {

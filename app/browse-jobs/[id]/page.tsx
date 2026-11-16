@@ -27,7 +27,6 @@ import {
 import { JOB_CATEGORY_LABELS, JOB_TYPE_LABELS } from "@/lib/jobs/options"
 import { surfaceClassName } from "@/lib/jobs/surface"
 import { cn } from "@/lib/utils"
-import { IJob } from "@/types/jobTypes"
 
 type JobDetailPageProps = {
   params: Promise<{ id: string }>
@@ -49,7 +48,7 @@ export const generateMetadata = async ({
 
 const JobDetailPage = async ({ params }: JobDetailPageProps) => {
   const { id } = await params
-  const job:IJob = await getJobById(id)
+  const job = await getJobById(id)
 
   if (!job) notFound()
 
@@ -85,7 +84,7 @@ const JobDetailPage = async ({ params }: JobDetailPageProps) => {
         <JobStatCard
           icon={Banknote}
           label="Salary Range"
-          value={formatSalary(job)}
+          value={formatSalary(job) ?? "Not specified"}
         />
         <JobStatCard icon={MapPin} label="Location" value={location} />
         <JobStatCard icon={Briefcase} label="Job Type" value={jobType} />

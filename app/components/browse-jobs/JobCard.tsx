@@ -42,6 +42,7 @@ const JobTag = ({ icon: Icon, children, tone = "default" }: JobTagProps) => (
 
 export const JobCard = ({ job }: { job: IJob }) => {
   const closed = isClosed(job)
+  const salary = formatSalary(job)
 
   return (
     <Link
@@ -82,7 +83,7 @@ export const JobCard = ({ job }: { job: IJob }) => {
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-1.5">
-            <JobTag icon={Banknote}>{formatSalary(job)}</JobTag>
+            {salary && <JobTag icon={Banknote}>{salary}</JobTag>}
             <JobTag icon={Briefcase}>{JOB_TYPE_LABELS[job.jobType]}</JobTag>
             <JobTag icon={MapPin}>{formatWorkMode(job)}</JobTag>
             {closed && (

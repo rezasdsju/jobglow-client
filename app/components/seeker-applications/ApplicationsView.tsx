@@ -5,7 +5,7 @@ import { useState } from "react"
 import { ChevronRight, FileDown, FileText, Search } from "lucide-react"
 
 import { ApplicationStats } from "./ApplicationStats"
-import { ApplicationsPagination } from "./ApplicationsPagination"
+import { ApplicationsPagination } from "@/app/components/applications/ApplicationsPagination"
 import { ApplicationsTable } from "./ApplicationsTable"
 import { Button } from "@/components/ui/button"
 import { getApplicationStats } from "@/lib/applications/stats"

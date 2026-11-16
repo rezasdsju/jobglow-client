@@ -11,11 +11,13 @@ type ApplicationsPaginationProps = {
   totalItems: number
   totalPages: number
   onPageChange: (page: number) => void
+  /** Singular noun used in the footer, e.g. "application" or "applicant". */
+  itemNoun?: string
 }
 
 /**
- * Footer for the applications table. The parent owns the page state so the
- * pagination resets when the Active/Archived tab changes.
+ * Footer for an applications table. The parent owns the page state so the
+ * pagination resets when the visible list changes.
  */
 export const ApplicationsPagination = ({
   page,
@@ -23,6 +25,7 @@ export const ApplicationsPagination = ({
   totalItems,
   totalPages,
   onPageChange,
+  itemNoun = "application",
 }: ApplicationsPaginationProps) => {
   const start = totalItems === 0 ? 0 : (page - 1) * pageSize + 1
   const end = Math.min(page * pageSize, totalItems)
@@ -35,7 +38,8 @@ export const ApplicationsPagination = ({
           {start}–{end}
         </span>{" "}
         of <span className="font-medium text-foreground">{totalItems}</span>{" "}
-        {totalItems === 1 ? "application" : "applications"}
+        {itemNoun}
+        {totalItems === 1 ? "" : "s"}
       </p>
 
       {totalPages > 1 && (

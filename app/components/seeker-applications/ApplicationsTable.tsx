@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowUpRight, MapPin } from "lucide-react"
 
-import { ApplicationStatusBadge } from "./ApplicationStatusBadge"
+import { ApplicationStatusBadge } from "@/app/components/applications/ApplicationStatusBadge"
 import { Button } from "@/components/ui/button"
 import {
   formatApplicationDate,

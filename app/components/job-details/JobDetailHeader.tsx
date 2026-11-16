@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation"
 import { applyToJob, getApplicationsCount } from "@/lib/actions/applications"
 import { toast } from "sonner"
 import { GiReturnArrow } from "react-icons/gi"
+import { getUserPremiumById } from "@/lib/api/users"
 
 /**
  * Job title, company, hiring status, and the primary actions. The Apply and
@@ -37,8 +38,9 @@ export const JobDetailHeader = ({ job }: { job: IJob }) => {
 
       const countResult = await getApplicationsCount(`applicantId=${user.id}`)
       // console.log(countResult)
-
-      if (countResult.count >= 3) {
+      const premiumResult = await getUserPremiumById(user.id)
+      console.log(premiumResult)
+      if (!premiumResult.premium && countResult.count >= 3) {
         router.push('/payment')
         return
       } else {

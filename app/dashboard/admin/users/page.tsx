@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { UsersView } from "@/app/components/admin-users/UsersView"
-import { getUsers } from "@/lib/api/admin-users"
+import { getUsers } from "@/lib/api/better-auth-users"
 import { getSession } from "@/lib/core/server"
 
 export const metadata: Metadata = {

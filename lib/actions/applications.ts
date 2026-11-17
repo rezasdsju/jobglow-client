@@ -1,5 +1,9 @@
 import { normalizeApplication } from "@/lib/applications/normalize"
-import type { IApplication, NewApplication } from "@/types/applicationTypes"
+import type {
+  ApplicationStatus,
+  IApplication,
+  NewApplication,
+} from "@/types/applicationTypes"
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_API_URL
 
@@ -46,9 +50,41 @@ export const getApplications = async (query = ""): Promise<IApplication[]> => {
   return (Array.isArray(data) ? data : []).map(normalizeApplication)
 }
 
-
-
-export const getApplicationsCount = async (query = ""):Promise<{count:number}> => {
+export const getApplicationsCount = async (
+  query = ""
+): Promise<{ count: number }> => {
   const res = await fetch(`${BASE_URL}/applications/count?${query}`)
   return res.json()
+}
+
+export type UpdateApplicationStatusResult = {
+  matchedCount: number
+  modifiedCount: number
+}
+
+/**
+ * Persists a new workflow status for one application.
+ *
+ * The API only accepts status updates through this endpoint; `updatedAt` is
+ * set on the server so the history stays consistent.
+ */
+export const updateApplicationStatus = async (
+  applicationId: string,
+  data: { status: ApplicationStatus }
+): Promise<UpdateApplicationStatusResult> => {
+  const response = await fetch(`${BASE_URL}/applications/${applicationId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to update application status: ${response.status} ${response.statusText}`
+    )
+  }
+
+  return response.json()
 }

@@ -8,7 +8,6 @@ import {
   Building2,
   CalendarClock,
   ChevronRight,
-  Info,
   MapPin,
   Users,
 } from "lucide-react"
@@ -17,7 +16,7 @@ import { toast } from "sonner"
 import { ApplicantsTable } from "./ApplicantsTable"
 import { ApplicationsPagination } from "@/app/components/applications/ApplicationsPagination"
 import { Button } from "@/components/ui/button"
-import { getApplicationKey } from "@/lib/applications/key"
+import { updateApplicationStatus } from "@/lib/actions/applications"
 import { APPLICATION_STATUS_META } from "@/lib/applications/status"
 import { formatDeadline, formatLocation } from "@/lib/jobs/format"
 import { JOB_TYPE_LABELS } from "@/lib/jobs/options"
@@ -82,15 +81,18 @@ const EmptyApplicants = ({ jobId }: { jobId?: string }) => (
 
 /**
  * Recruiter review screen for one job. Applications are fetched on the server
- * and passed in; status changes are held in local state until the status
- * update endpoint is added.
+ * and passed in; status changes are saved through the applications API and
+ * reflected locally once the update succeeds.
  */
 export const JobApplicantsView = ({
   job,
   applications,
 }: JobApplicantsViewProps) => {
   const [page, setPage] = useState(1)
-  const [overrides, setOverrides] = useState<Record<string, StatusOverride>>({})
+  const [statusOverrides, setStatusOverrides] = useState<
+    Record<string, StatusOverride>
+  >({})
+  const [pendingIds, setPendingIds] = useState<Record<string, boolean>>({})
 
   const sortedApplications = useMemo(
     () =>
@@ -103,7 +105,10 @@ export const JobApplicantsView = ({
   )
 
   const resolvedApplications = sortedApplications.map((application) => {
-    const override = overrides[getApplicationKey(application)]
+    const override = application._id
+      ? statusOverrides[application._id]
+      : undefined
+
     return override ? { ...application, ...override } : application
   })
 
@@ -117,29 +122,45 @@ export const JobApplicantsView = ({
     currentPage * PAGE_SIZE
   )
 
-  const handleStatusChange = (
+  const handleStatusChange = async (
     application: IApplication,
     status: ApplicationStatus
   ) => {
-    if (status === application.status) return
+    if (!application._id || status === application.status) return
 
-    // TODO: Persist the new status through the applications API once the
-    // endpoint exists. Until then the change only lives in this page's state.
-    setOverrides((current) => ({
-      ...current,
-      [getApplicationKey(application)]: {
-        status,
-        updatedAt: new Date().toISOString(),
-      },
-    }))
+    const applicationId = application._id
+    setPendingIds((current) => ({ ...current, [applicationId]: true }))
 
-    toast.info(
-      `${application.name} moved to ${APPLICATION_STATUS_META[status].label}`,
-      {
-        description:
-          "This change is only on this page — the database update is not wired up yet.",
+    try {
+      const result = await updateApplicationStatus(applicationId, { status })
+
+      if (result.matchedCount === 0) {
+        throw new Error("This application no longer exists.")
       }
-    )
+
+      setStatusOverrides((current) => ({
+        ...current,
+        [applicationId]: {
+          status,
+          updatedAt: new Date().toISOString(),
+        },
+      }))
+
+      toast.success(
+        `${application.name} moved to ${APPLICATION_STATUS_META[status].label}`
+      )
+    } catch (error) {
+      toast.error(`Couldn't update ${application.name}'s status`, {
+        description:
+          error instanceof Error ? error.message : "Please try again.",
+      })
+    } finally {
+      setPendingIds((current) => {
+        const next = { ...current }
+        delete next[applicationId]
+        return next
+      })
+    }
   }
 
   return (
@@ -198,15 +219,7 @@ export const JobApplicantsView = ({
           {applications.length === 1 ? "applicant" : "applicants"}
         </p>
         <p className="text-xs text-muted-foreground">
-          Newest applications first
-        </p>
-      </div>
-
-      <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
-        <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-        <p>
-          Status changes update this page only. Saving them to the database is
-          not wired up yet.
+          Newest applications first · Status changes save automatically
         </p>
       </div>
 
@@ -217,6 +230,7 @@ export const JobApplicantsView = ({
           <ApplicantsTable
             applications={pagedApplications}
             onStatusChange={handleStatusChange}
+            pendingIds={pendingIds}
           />
           <ApplicationsPagination
             page={currentPage}

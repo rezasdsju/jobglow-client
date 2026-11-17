@@ -15,6 +15,8 @@ import type { ApplicationStatus, IApplication } from "@/types/applicationTypes"
 type ApplicantsTableProps = {
   applications: IApplication[]
   onStatusChange: (application: IApplication, status: ApplicationStatus) => void
+  /** Application ids currently being saved, keyed by id. */
+  pendingIds: Record<string, boolean>
 }
 
 const getInitials = (name: string) =>
@@ -61,109 +63,131 @@ const AppliedCell = ({ appliedAt }: { appliedAt: string }) => (
 export const ApplicantsTable = ({
   applications,
   onStatusChange,
-}: ApplicantsTableProps) => (
-  <>
-    <div className="hidden lg:block">
-      <table className="w-full table-fixed text-left text-sm">
-        <colgroup>
-          <col className="w-[36%]" />
-          <col className="w-[18%]" />
-          <col className="w-[18%]" />
-          <col className="w-[28%]" />
-        </colgroup>
-        <thead>
-          <tr className="border-b border-border bg-muted/30 text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
-            <th scope="col" className="px-4 py-2.5 font-medium">
-              Applicant
-            </th>
-            <th scope="col" className="px-4 py-2.5 font-medium">
-              Applied
-            </th>
-            <th scope="col" className="px-4 py-2.5 font-medium">
-              Status
-            </th>
-            <th scope="col" className="px-4 py-2.5 text-right font-medium">
-              Update status
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border/70">
-          {applications.map((application) => (
-            <tr
-              key={getApplicationKey(application)}
-              className="transition-colors hover:bg-muted/20"
-            >
-              <td className="px-4 py-3">
-                <ApplicantCell application={application} />
-              </td>
-              <td className="px-4 py-3">
-                <AppliedCell appliedAt={application.appliedAt} />
-              </td>
-              <td className="px-4 py-3">
-                <ApplicationStatusBadge status={application.status} />
-              </td>
-              <td className="px-4 py-3">
-                <div className="flex justify-end">
-                  <ApplicantStatusSelect
-                    applicantName={application.name}
-                    status={application.status}
-                    onChange={(status) => onStatusChange(application, status)}
-                  />
-                </div>
-              </td>
+  pendingIds,
+}: ApplicantsTableProps) => {
+  const isPending = (application: IApplication) =>
+    Boolean(application._id && pendingIds[application._id])
+
+  return (
+    <>
+      <div className="hidden lg:block">
+        <table className="w-full table-fixed text-left text-sm">
+          <colgroup>
+            <col className="w-[36%]" />
+            <col className="w-[18%]" />
+            <col className="w-[18%]" />
+            <col className="w-[28%]" />
+          </colgroup>
+          <thead>
+            <tr className="border-b border-border bg-muted/30 text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
+              <th scope="col" className="px-4 py-2.5 font-medium">
+                Applicant
+              </th>
+              <th scope="col" className="px-4 py-2.5 font-medium">
+                Applied
+              </th>
+              <th scope="col" className="px-4 py-2.5 font-medium">
+                Status
+              </th>
+              <th scope="col" className="px-4 py-2.5 text-right font-medium">
+                Update status
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody className="divide-y divide-border/70">
+            {applications.map((application) => {
+              const pending = isPending(application)
 
-    <div className="grid gap-3 p-4 lg:hidden">
-      {applications.map((application) => (
-        <article
-          key={getApplicationKey(application)}
-          className={cn(surfaceClassName, "p-4")}
-        >
-          <div className="flex items-start gap-3">
-            <ApplicantMark application={application} />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{application.name}</p>
-              <p className="truncate text-xs text-muted-foreground">
-                {application.email}
-              </p>
-            </div>
-            <ApplicationStatusBadge
-              status={application.status}
-              className="shrink-0"
-            />
-          </div>
+              return (
+                <tr
+                  key={getApplicationKey(application)}
+                  aria-busy={pending}
+                  className="transition-colors hover:bg-muted/20"
+                >
+                  <td className="px-4 py-3">
+                    <ApplicantCell application={application} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <AppliedCell appliedAt={application.appliedAt} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <ApplicationStatusBadge status={application.status} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end">
+                      <ApplicantStatusSelect
+                        applicantName={application.name}
+                        status={application.status}
+                        disabled={!application._id || pending}
+                        onChange={(status) =>
+                          onStatusChange(application, status)
+                        }
+                      />
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
 
-          <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border/70 pt-3 text-xs">
-            <div>
-              <dt className="text-muted-foreground">Applied</dt>
-              <dd className="mt-0.5 font-medium">
-                {formatApplicationDate(application.appliedAt)}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">Last update</dt>
-              <dd className="mt-0.5 font-medium">
-                {formatRelativeTime(application.updatedAt)}
-              </dd>
-            </div>
-          </dl>
+      <div className="grid gap-3 p-4 lg:hidden">
+        {applications.map((application) => {
+          const pending = isPending(application)
 
-          <div className="mt-3 border-t border-border/70 pt-3">
-            <p className="mb-1 text-[11px] font-medium text-muted-foreground">
-              Update status
-            </p>
-            <ApplicantStatusSelect
-              applicantName={application.name}
-              status={application.status}
-              onChange={(status) => onStatusChange(application, status)}
-            />
-          </div>
-        </article>
-      ))}
-    </div>
-  </>
-)
+          return (
+            <article
+              key={getApplicationKey(application)}
+              aria-busy={pending}
+              className={cn(surfaceClassName, "p-4")}
+            >
+              <div className="flex items-start gap-3">
+                <ApplicantMark application={application} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">
+                    {application.name}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {application.email}
+                  </p>
+                </div>
+                <ApplicationStatusBadge
+                  status={application.status}
+                  className="shrink-0"
+                />
+              </div>
+
+              <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border/70 pt-3 text-xs">
+                <div>
+                  <dt className="text-muted-foreground">Applied</dt>
+                  <dd className="mt-0.5 font-medium">
+                    {formatApplicationDate(application.appliedAt)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Last update</dt>
+                  <dd className="mt-0.5 font-medium">
+                    {formatRelativeTime(application.updatedAt)}
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-3 border-t border-border/70 pt-3">
+                <p className="mb-1 text-[11px] font-medium text-muted-foreground">
+                  Update status
+                </p>
+                <ApplicantStatusSelect
+                  applicantName={application.name}
+                  status={application.status}
+                  disabled={!application._id || pending}
+                  onChange={(status) => onStatusChange(application, status)}
+                />
+              </div>
+            </article>
+          )
+        })}
+      </div>
+    </>
+  )
+}

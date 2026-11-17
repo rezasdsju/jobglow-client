@@ -22,11 +22,11 @@ const JobApplicationsPage = async ({ params }: JobApplicationsPageProps) => {
 
   if (!session?.user) notFound()
 
-  // The applications API can only filter by applicant, so load the list and
-  // narrow it down to this job on the server.
+  // Filter by job on the API, then keep a defensive client-side check in case
+  // the endpoint ever ignores the query param.
   const [job, applications] = await Promise.all([
     getJobById(id),
-    getApplications(),
+    getApplications(`jobId=${encodeURIComponent(id)}`),
   ])
 
   // Only the recruiter who owns the post can review its applicants.

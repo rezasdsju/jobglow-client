@@ -47,13 +47,13 @@ App Router and a separate Express/MongoDB API.
 - 📋 **Manage job posts** with salary, status, and quick actions, plus a
   direct link to each post's applicants
 - 👥 **Review applicants per job** in a table with applicant details,
-  application date, current status, and a status update control
+  application date, current status, and a status control that saves changes
+  to the database
 - 🗑️ **Delete job posts** behind a confirmation dialog with toast feedback
 
 > **Current status:** search is wired to the API. Filter, sort, and pagination
 > controls render from the URL but do not write back to it yet, and the
-> **Apply Now** / **Save** actions are placeholders. Recruiter status changes
-> update the review page only; saving them to the database is planned.
+> **Apply Now** / **Save** actions are placeholders.
 
 > **Note:** For now, anyone can choose any role. Verification for the Recruiter
 > and Admin roles is planned.
@@ -61,8 +61,7 @@ App Router and a separate Express/MongoDB API.
 ### Planned
 
 - **Job Seekers:** apply to jobs, save listings, and track applications
-- **Recruiters:** edit/duplicate jobs, persist applicant status changes, and
-  manage hiring
+- **Recruiters:** edit/duplicate jobs and manage hiring
 - **Admins:** approve companies and jobs, and manage users
 - **Role verification** for Recruiters and Admins
 - Server-side sorting and pagination

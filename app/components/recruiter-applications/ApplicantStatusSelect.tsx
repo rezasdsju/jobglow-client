@@ -19,6 +19,7 @@ type ApplicantStatusSelectProps = {
   applicantName: string
   status: ApplicationStatus
   onChange: (status: ApplicationStatus) => void
+  disabled?: boolean
   className?: string
 }
 
@@ -35,11 +36,13 @@ export const ApplicantStatusSelect = ({
   applicantName,
   status,
   onChange,
+  disabled = false,
   className,
 }: ApplicantStatusSelectProps) => (
   <Select
     items={STATUS_ITEMS}
     value={status}
+    disabled={disabled}
     onValueChange={(value) => {
       if (isApplicationStatus(value)) onChange(value)
     }}

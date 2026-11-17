@@ -13,6 +13,8 @@ type ApplicationsPaginationProps = {
   onPageChange: (page: number) => void
   /** Singular noun used in the footer, e.g. "application" or "applicant". */
   itemNoun?: string
+  /** Accessible name for the pagination landmark. */
+  ariaLabel?: string
 }
 
 /**
@@ -26,6 +28,7 @@ export const ApplicationsPagination = ({
   totalPages,
   onPageChange,
   itemNoun = "application",
+  ariaLabel = "Applications pagination",
 }: ApplicationsPaginationProps) => {
   const start = totalItems === 0 ? 0 : (page - 1) * pageSize + 1
   const end = Math.min(page * pageSize, totalItems)
@@ -43,10 +46,7 @@ export const ApplicationsPagination = ({
       </p>
 
       {totalPages > 1 && (
-        <nav
-          aria-label="Applications pagination"
-          className="flex items-center gap-1"
-        >
+        <nav aria-label={ariaLabel} className="flex items-center gap-1">
           <Button
             type="button"
             variant="ghost"

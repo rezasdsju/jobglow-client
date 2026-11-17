@@ -170,18 +170,19 @@ jobglow-client/
 
 ### Routes
 
-| Route                           | Description                    |
-| ------------------------------- | ------------------------------ |
-| `/`                             | Homepage                       |
-| `/browse-jobs`                  | Search and filter job listings |
-| `/browse-jobs/[id]`             | Job detail page                |
-| `/sign-in`, `/sign-up`          | Authentication                 |
-| `/dashboard/seeker`             | Seeker dashboard               |
-| `/dashboard/recruiter`          | Recruiter dashboard            |
-| `/dashboard/recruiter/jobs`     | Manage job posts               |
-| `/dashboard/recruiter/jobs/new` | Create a job post              |
-| `/dashboard/recruiter/jobs/[id]/applications` | Review job applicants |
-| `/dashboard/admin`              | Admin dashboard                |
+| Route                                         | Description                    |
+| --------------------------------------------- | ------------------------------ |
+| `/`                                           | Homepage                       |
+| `/browse-jobs`                                | Search and filter job listings |
+| `/browse-jobs/[id]`                           | Job detail page                |
+| `/sign-in`, `/sign-up`                        | Authentication                 |
+| `/dashboard/seeker`                           | Seeker dashboard               |
+| `/dashboard/recruiter`                        | Recruiter dashboard            |
+| `/dashboard/recruiter/jobs`                   | Manage job posts               |
+| `/dashboard/recruiter/jobs/new`               | Create a job post              |
+| `/dashboard/recruiter/jobs/[id]/applications` | Review job applicants          |
+| `/dashboard/admin`                            | Admin dashboard                |
+| `/dashboard/admin/users`                      | User management (UI)           |
 
 ## 📸 Screenshots
 

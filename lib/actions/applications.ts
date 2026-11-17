@@ -1,9 +1,11 @@
+'use server'
 import { normalizeApplication } from "@/lib/applications/normalize"
 import type {
   ApplicationStatus,
   IApplication,
   NewApplication,
 } from "@/types/applicationTypes"
+import { authFetch } from "../core/server"
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_API_URL
 
@@ -37,15 +39,8 @@ export const applyToJob = async (data: NewApplication) => {
 }
 
 export const getApplications = async (query = ""): Promise<IApplication[]> => {
-  const response = await fetch(
-    `${BASE_URL}/applications${query ? `?${query}` : ""}`,
-    { cache: "no-store" }
-  )
-  if (!response.ok) {
-    throw new Error(
-      `Failed to load applications: ${response.status} ${response.statusText}`
-    )
-  }
+  const api = `${BASE_URL}/applications${query ? `?${query}` : ""}`
+  const response = await authFetch(api)
   const data = await response.json()
   return (Array.isArray(data) ? data : []).map(normalizeApplication)
 }

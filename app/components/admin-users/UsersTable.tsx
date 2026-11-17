@@ -11,6 +11,8 @@ import type { ManagedUser, PlatformRole } from "@/types/userTypes"
 type UsersTableProps = {
   users: ManagedUser[]
   onRoleChange: (userId: string, role: PlatformRole) => void
+  /** Users whose role is currently being saved. */
+  pendingUserIds: Record<string, boolean>
 }
 
 const UserAvatar = ({ user }: { user: ManagedUser }) => (
@@ -45,7 +47,11 @@ const EmailCell = ({ user }: { user: ManagedUser }) => (
 )
 
 /** Desktop table and matching card list for the user management screen. */
-export const UsersTable = ({ users, onRoleChange }: UsersTableProps) => (
+export const UsersTable = ({
+  users,
+  onRoleChange,
+  pendingUserIds,
+}: UsersTableProps) => (
   <>
     <div className="hidden xl:block">
       <table className="w-full table-fixed text-left text-sm">
@@ -102,6 +108,7 @@ export const UsersTable = ({ users, onRoleChange }: UsersTableProps) => (
                   <RoleToggle
                     userName={user.name}
                     role={user.role}
+                    disabled={Boolean(pendingUserIds[user.id])}
                     onChange={(role) => onRoleChange(user.id, role)}
                   />
                 </div>
@@ -149,6 +156,7 @@ export const UsersTable = ({ users, onRoleChange }: UsersTableProps) => (
             <RoleToggle
               userName={user.name}
               role={user.role}
+              disabled={Boolean(pendingUserIds[user.id])}
               onChange={(role) => onRoleChange(user.id, role)}
               className="w-full justify-center"
             />

@@ -1,8 +1,10 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { ChevronRight, Search, SearchX, Users } from "lucide-react"
+import { toast } from "sonner"
 
 import { UserStats } from "./UserStats"
 import { UsersTable } from "./UsersTable"
@@ -23,6 +25,7 @@ import {
 } from "@/lib/users/roles"
 import { getUserStats } from "@/lib/users/stats"
 import type { ManagedUser, PlatformRole } from "@/types/userTypes"
+import { updateUserRole } from "@/lib/actions/users"
 
 const PAGE_SIZE = 8
 
@@ -77,18 +80,24 @@ type UsersViewProps = {
  * client-side; the server page owns the user data.
  */
 export const UsersView = ({ users }: UsersViewProps) => {
+  const router = useRouter()
   const [query, setQuery] = useState("")
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all")
   const [page, setPage] = useState(1)
   const [roleOverrides, setRoleOverrides] = useState<
-    Record<string, PlatformRole>
+    Record<string, { role: PlatformRole; from: PlatformRole }>
   >({})
+  const [pendingIds, setPendingIds] = useState<Record<string, boolean>>({})
 
   const resolvedUsers = useMemo(
     () =>
       users.map((user) => {
         const override = roleOverrides[user.id]
-        return override ? { ...user, role: override } : user
+        // The override only stands in for the role it replaced. Once refreshed
+        // server data moves past that role, the saved value takes over.
+        const applies = override && user.role === override.from
+
+        return applies ? { ...user, role: override.role } : user
       }),
     [users, roleOverrides]
   )
@@ -116,11 +125,51 @@ export const UsersView = ({ users }: UsersViewProps) => {
     currentPage * PAGE_SIZE
   )
 
-  const handleRoleChange = (userId: string, role: PlatformRole) => {
-    setRoleOverrides((current) => ({ ...current, [userId]: role }))
+  const handleRoleChange = async (userId: string, role: PlatformRole) => {
+    const user = resolvedUsers.find((item) => item.id === userId)
+    if (!user || user.role === role || pendingIds[userId]) return
 
-    // TODO: Persist the role change through the Better Auth admin API, then
-    // refresh the list. Until then the switch only updates this screen.
+    const previousRole = user.role
+    const roleLabel = PLATFORM_ROLE_META[role].label
+
+    // Optimistic update so the switch reacts immediately.
+    setRoleOverrides((current) => ({
+      ...current,
+      [userId]: { role, from: previousRole },
+    }))
+    setPendingIds((current) => ({ ...current, [userId]: true }))
+
+    try {
+      const result = await updateUserRole(userId, role)
+
+      if (!result.ok) throw new Error(result.message)
+
+      toast.success(
+        result.changed
+          ? `${user.name}'s role is now ${roleLabel}`
+          : `${user.name} already has the ${roleLabel} role`
+      )
+
+      // Re-fetch the row from the server so the list reflects the saved role.
+      router.refresh()
+    } catch (error) {
+      // Drop the override so the UI never shows a role that was not saved.
+      setRoleOverrides((current) => {
+        const next = { ...current }
+        delete next[userId]
+        return next
+      })
+      toast.error(`Couldn't update ${user.name}'s role`, {
+        description:
+          error instanceof Error ? error.message : "Please try again.",
+      })
+    } finally {
+      setPendingIds((current) => {
+        const next = { ...current }
+        delete next[userId]
+        return next
+      })
+    }
   }
 
   const resetFilters = () => {
@@ -216,7 +265,7 @@ export const UsersView = ({ users }: UsersViewProps) => {
       </div>
 
       <p className="mt-2 text-[11px] text-muted-foreground">
-        Role changes update this screen only — saving them is planned.
+        Role changes are saved to the database immediately.
       </p>
 
       {resolvedUsers.length === 0 ? (
@@ -225,7 +274,11 @@ export const UsersView = ({ users }: UsersViewProps) => {
         <NoMatchingUsers onReset={resetFilters} />
       ) : (
         <div className="mt-3 overflow-hidden rounded-xl border border-border">
-          <UsersTable users={pagedUsers} onRoleChange={handleRoleChange} />
+          <UsersTable
+            users={pagedUsers}
+            onRoleChange={handleRoleChange}
+            pendingUserIds={pendingIds}
+          />
           <ApplicationsPagination
             page={currentPage}
             pageSize={PAGE_SIZE}
